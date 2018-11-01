@@ -144,11 +144,29 @@ namespace SingleResponsibilityPrinciple
             LogMessage("INFO", "  {0} trades processed", trades.Count());
         }
 
-        public void ProcessTrades(Stream stream)
+        public void ProcessTrades(String url)
         {
-            var lines = ReadTradeData(stream);
+            //var lines = ReadTradeData(stream);
+            var lines = ReadURLTradeData(url);
             var trades = ParseTrades(lines);
             StoreTrades(trades);
+        }
+
+        public IEnumerable<string> ReadURLTradeData(string url)
+        {
+            var tradeData = new List<string>();
+            // create a web client and use it to read the file stored at the given URL
+            var client = new WebClient();
+            using (var stream = client.OpenRead(url))
+            using (var reader = new StreamReader(stream))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    tradeData.Add(line);
+                }
+            }
+            return tradeData;
         }
 
 
