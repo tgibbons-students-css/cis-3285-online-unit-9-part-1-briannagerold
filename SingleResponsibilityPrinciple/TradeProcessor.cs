@@ -75,13 +75,24 @@ namespace SingleResponsibilityPrinciple
                 return false;
             }
 
+            if(tradeAmount < 1000 || tradeAmount > 100000)
+            {
+                LogMessage("WARN", " Trade price on line {0} not a valid amount: '{1}'", currentLine, fields[1]);
+                return false;
+            }
+
             return true;
         }
 
         private void LogMessage(string msgType, string message, params object[] args)
         {
             Console.WriteLine(msgType+ " :" +message, args);
+            using (StreamWriter logfile = File.AppendText("log.xml"))
+            {
+                logfile.WriteLine("<log><type>" + msgType + "</type><message>" + message + "</message></log> ", args);
+            }
         }
+
 
         private TradeRecord MapTradeDataToTradeRecord(string[] fields)
         {
@@ -104,7 +115,8 @@ namespace SingleResponsibilityPrinciple
         private void StoreTrades(IEnumerable<TradeRecord> trades)
         {
             LogMessage("INFO", "  Connecting to Database");
-            using (var connection = new System.Data.SqlClient.SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\tradedatabase.mdf;Integrated Security=True;Connect Timeout=30;"))
+            string connectSqlServer = "Data Source = athena.css.edu; Initial Catalog = CIS3285; Persist Security Info = True; User ID = tgibbons; Password = Data Source = athena.css.edu; Initial Catalog = CIS3285; Persist Security Info = True; User ID = tgibbons; Password = Saints4CSS";
+            using (var connection = new System.Data.SqlClient.SqlConnection(connectSqlServer))
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
