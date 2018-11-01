@@ -144,9 +144,15 @@ namespace SingleResponsibilityPrinciple
             LogMessage("INFO", "  {0} trades processed", trades.Count());
         }
 
+        public void ProcessTrades(Stream stream)
+        {
+            var lines = ReadTradeData(stream);
+            var trades = ParseTrades(lines);
+            StoreTrades(trades);
+        }
+
         public void ProcessTrades(String url)
         {
-            //var lines = ReadTradeData(stream);
             var lines = ReadURLTradeData(url);
             var trades = ParseTrades(lines);
             StoreTrades(trades);
